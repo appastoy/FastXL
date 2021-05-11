@@ -1,6 +1,6 @@
 # FastXL
 
-This project is fast excel file reader C# library. This supports only read. NOT write.
+This project is a fast excel file reader C# library. This supports only read. NOT write.
 
 # How to
 Excel file(.xlsx, .xlsm) is a set of XML files that are compressed to zip archive.
