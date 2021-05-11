@@ -9,12 +9,14 @@ namespace FastXL
 	internal class CellGrid
 	{
 		const int alphabetRange = 'Z' - 'A' + 1;
-		static readonly Regex dimensionRE = new(@"<dimension ref=""([^""]+)""", RegexOptions.Compiled);
-		static readonly Regex addressRE = new(@"([A-Z]+)(\d*)", RegexOptions.Compiled);
-		static readonly Regex cellRE = new(@"<c r=""([^""]+)""(.*?)>(.+?)</c>", RegexOptions.Compiled);
-		static readonly Regex valueRE = new(@"<v>(.+)</v>", RegexOptions.Compiled);
-		static readonly Regex floatRE = new(@"^[-+]?\d+(?:\.?[eE][+-]?|\.)\d+$", RegexOptions.Compiled | RegexOptions.Multiline);
-		static readonly Regex intRE = new(@"^-?\d+(?:[eE]+?\d+)?$", RegexOptions.Compiled | RegexOptions.Multiline);
+		static readonly Regex dimensionRE = new Regex(@"<dimension ref=""([^""]+)""", RegexOptions.Compiled);
+		static readonly Regex addressRE = new Regex(@"([A-Z]+)(\d*)", RegexOptions.Compiled);
+		static readonly Regex cellRE = new Regex(@"<c r=""([^""]+)""(.*?)>(.+?)</c>", RegexOptions.Compiled);
+		static readonly Regex valueRE = new Regex(@"<v>(.+)</v>", RegexOptions.Compiled);
+		static readonly Regex floatRE = new Regex(@"^[-+]?\d+(?:\.?[eE][+-]?|\.)\d+$", RegexOptions.Compiled | RegexOptions.Multiline);
+		static readonly Regex intRE = new Regex(@"^-?\d+(?:[eE]+?\d+)?$", RegexOptions.Compiled | RegexOptions.Multiline);
+		static readonly object trueValue = true;
+		static readonly object falseValue = false;
 
 		public static object[,] Parse(string xml, string[] sharedStrings)
 		{
@@ -82,20 +84,20 @@ namespace FastXL
 
 			if (floatRE.IsMatch(valueString))
 			{
-				return double.TryParse(valueString, out var doubleValue) ? doubleValue :
-					   decimal.TryParse(valueString, out var decimalValue) ? decimalValue :
-					   0.0;
+				if (double.TryParse(valueString, out var doubleValue)) return doubleValue;
+				if (decimal.TryParse(valueString, out var decimalValue)) return decimalValue;
 			}
 
 			if (intRE.IsMatch(valueString))
 			{
-				return int.TryParse(valueString, out var intValue) ? intValue :
-					   long.TryParse(valueString, out var longValue) ? longValue :
-					   ulong.TryParse(valueString, out var ulongValue) ? ulongValue :
-					   0;
+				if (int.TryParse(valueString, out var intValue)) return intValue;
+				if (long.TryParse(valueString, out var longValue)) return longValue;
+				if (ulong.TryParse(valueString, out var ulongValue)) return ulongValue;
 			}
 
-			return bool.TryParse(valueString, out var boolValue) ? boolValue : valueString;
+			if (bool.TryParse(valueString, out var boolValue)) return boolValue ? trueValue : falseValue; 
+			
+			return valueString;
 		}
 
 		static int ConvertAlphabetToIndex(string address)

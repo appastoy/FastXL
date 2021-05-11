@@ -7,8 +7,8 @@ namespace FastXL
 {
 	public static class ExcelFile
 	{
-		static readonly Regex sheetNameRE = new(@"<sheet name=""([^""]+)"" sheetId=""(\d+)""", RegexOptions.Compiled);
-		static readonly Regex sharedStringRE = new(@"<t(?:>| [^>]+>)([^<]+)</t>", RegexOptions.Compiled | RegexOptions.Multiline);
+		static readonly Regex sheetNameRE = new Regex(@"<sheet name=""([^""]+)"" sheetId=""(\d+)""", RegexOptions.Compiled);
+		static readonly Regex sharedStringRE = new Regex(@"<t(?:>| [^>]+>)([^<]+)</t>", RegexOptions.Compiled | RegexOptions.Multiline);
 
 		public static async Task<Workbook> LoadBookAsync(string xlPath, bool loadAllSheet = false)
 		{
@@ -51,7 +51,7 @@ namespace FastXL
 				throw new InvalidOperationException("Can't find sharedStrings.xml");
 
 			var matches = sharedStringRE.Matches(sharedStringsXml);
-			return matches.Select(m => m.Groups[1].Value).ToArray();
+			return matches.OfType<Match>().Select(m => m.Groups[1].Value).ToArray();
 		}
 
 		internal static async Task<object[,]> ParseCellsAsync(int sheetIndex, ExcelContext context)
