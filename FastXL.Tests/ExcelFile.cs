@@ -8,6 +8,13 @@ namespace FastXL.Tests
 	public class ExcelFileTests
 	{
 		[Test]
+		public async Task Empty_Book()
+		{
+			var book = await ExcelFile.LoadBookAsync("empty.xlsx");
+			Assert.That(book, Is.Not.Null);
+		}
+
+		[Test]
 		public async Task Book()
 		{
 			var book = await ExcelFile.LoadBookAsync("test.xlsx");

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL", "FastXL\FastXL.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL.Tests", "FastXL.Tests\FastXL.Tests.csproj", "{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{30900EAB-ABC8-450E-9D38-427239EABE8E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{30900EAB-ABC8-450E-9D38-427239EABE8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30900EAB-ABC8-450E-9D38-427239EABE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30900EAB-ABC8-450E-9D38-427239EABE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30900EAB-ABC8-450E-9D38-427239EABE8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
