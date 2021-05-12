@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,7 +13,19 @@ namespace FastXL
 
 		public static async Task<Workbook> LoadBookAsync(string xlPath, bool loadAllSheet = false)
 		{
-			var zip = await Zip.LoadAsync(xlPath);
+			var stream = new FileStream(xlPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true);
+			return await LoadBookAsync(stream, loadAllSheet);
+		}
+
+		public static async Task<Workbook> LoadBookAsync(byte[] bytes, bool loadAllSheet = false)
+		{
+			var stream = new MemoryStream(bytes, false);
+			return await LoadBookAsync(stream, loadAllSheet);
+		}
+
+		public static async Task<Workbook> LoadBookAsync(Stream stream, bool loadAllSheet = false)
+		{
+			var zip = await Zip.LoadAsync(stream);
 			var sheetNames = ParseSheetNames(zip);
 			var sharedStrings = ParseSharedStrings(zip);
 
@@ -25,6 +38,16 @@ namespace FastXL
 		public static Workbook LoadBook(string xlPath, bool loadAllSheet = false)
 		{
 			return LoadBookAsync(xlPath, loadAllSheet).Result;
+		}
+
+		public static Workbook LoadBook(byte[] bytes, bool loadAllSheet = false)
+		{
+			return LoadBookAsync(bytes, loadAllSheet).Result;
+		}
+
+		public static Workbook LoadBook(Stream stream, bool loadAllSheet = false)
+		{
+			return LoadBookAsync(stream, loadAllSheet).Result;
 		}
 
 		static string[] ParseSheetNames(Zip zip)
@@ -48,7 +71,7 @@ namespace FastXL
 		{
 			var sharedStringsXml = zip.Entries.FirstOrDefault(e => e.Name == "sharedStrings.xml")?.ReadAllText();
 			if (sharedStringsXml == null)
-				throw new InvalidOperationException("Can't find sharedStrings.xml");
+				return Array.Empty<string>();
 
 			var matches = sharedStringRE.Matches(sharedStringsXml);
 			return matches.OfType<Match>().Select(m => m.Groups[1].Value).ToArray();

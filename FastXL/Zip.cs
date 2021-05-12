@@ -31,21 +31,29 @@ namespace FastXL
 
 		public IReadOnlyList<ZipArchiveEntry> Entries => zipArchive.Entries;
 
-		public static async Task<Zip> LoadAsync(string xlPath)
+		public static async Task<Zip> LoadAsync(Stream stream)
 		{
-			using (var fileStream = new FileStream(xlPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+			byte[] buffer;
+			if (stream is MemoryStream memoryStream)
 			{
-				var buffer = new byte[(int)fileStream.Length];
-				await fileStream.ReadAsync(buffer, 0, buffer.Length);
-
-				return new Zip(new MemoryStream(buffer, false));
+				buffer = memoryStream.ToArray();
+				memoryStream.Dispose();
 			}
+			else
+			{
+				buffer = new byte[(int)stream.Length];
+				await stream.ReadAsync(buffer, 0, buffer.Length);
+				stream.Close();
+				stream.Dispose();
+			}
+
+			return new Zip(new MemoryStream(buffer, false));
 		}
 
 		Zip(Stream stream)
 		{
 			this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
-			zipArchive = new ZipArchive(this.stream, ZipArchiveMode.Read, false, Encoding.UTF8);
+			zipArchive = new ZipArchive(this.stream, ZipArchiveMode.Read, false);
 		}
 
 		~Zip() => Dispose();

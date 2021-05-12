@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 namespace FastXL
 {
 	[DebuggerDisplay("Sheets={Sheets.Count}")]
-	public sealed class Workbook
+	public sealed class Workbook : IDisposable
 	{
 		readonly ExcelContext context;
 		readonly Worksheet[] worksheets;
@@ -25,11 +26,22 @@ namespace FastXL
 		{
 			var loadSheetTasks = worksheets.Select(ws => ws.LoadAsync()).ToArray();
 			await Task.WhenAll(loadSheetTasks);
+			context.Archive.Dispose();
 		}
 
 		public void LoadAllSheet()
 		{
 			LoadAllSheetAsync().Wait();
+		}
+
+		public void Dispose()
+		{
+			context.Archive.Dispose();
+		}
+
+		~Workbook()
+		{
+			context.Archive.Dispose();
 		}
 	}
 }
