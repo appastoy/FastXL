@@ -10,14 +10,14 @@ namespace FastXL.Tests
 		[Test]
 		public async Task Empty_Book()
 		{
-			var book = await ExcelFile.LoadBookAsync("empty.xlsx");
+			var book = await Excel.LoadBookAsync("empty.xlsx");
 			Assert.That(book, Is.Not.Null);
 		}
 
 		[Test]
 		public async Task Book()
 		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx");
+			var book = await Excel.LoadBookAsync("test.xlsx", false);
 			Assert.That(book, Is.Not.Null);
 			Assert.That(book.Sheets.All(s => s.IsLoaded == false), Is.True);
 		}
@@ -25,7 +25,7 @@ namespace FastXL.Tests
 		[Test]
 		public async Task Book_with_Load()
 		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx", true);
+			var book = await Excel.LoadBookAsync("test.xlsx");
 			Assert.That(book, Is.Not.Null);
 			Assert.That(book.Sheets.All(s => s.IsLoaded == true), Is.True);
 		}
@@ -33,7 +33,7 @@ namespace FastXL.Tests
 		[Test]
 		public async Task Sheet()
 		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx", true);
+			var book = await Excel.LoadBookAsync("test.xlsx");
 			foreach (var sheet in book.Sheets)
 			{
 				Assert.That(sheet, Is.EqualTo(book[sheet.Name]));
@@ -44,8 +44,9 @@ namespace FastXL.Tests
 		[Test]
 		public async Task Range()
 		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx", true);
+			var book = await Excel.LoadBookAsync("test.xlsx", false);
 			var range = book["Range"];
+			range.Load();
 			Assert.That(range.ColumnCount, Is.EqualTo(9));
 			Assert.That(range.RowCount, Is.EqualTo(23));
 		}
@@ -53,8 +54,9 @@ namespace FastXL.Tests
 		[Test]
 		public async Task Values()
 		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx", true);
+			var book = await Excel.LoadBookAsync("test.xlsx", false);
 			var values = book["Values"];
+			values.Load();
 			// 1	2.3		abc		TRUE	1%	2012-08-11	2.3		3.3		abcTRUE
 			Assert.That(values.Cell(0, 0), Is.EqualTo(1));
 			Assert.That(values.Cell(0, 1), Is.EqualTo(2.3));
@@ -68,19 +70,6 @@ namespace FastXL.Tests
 			Assert.That(values.Cell(0, 9), Is.EqualTo(2.3));
 			Assert.That(values.Cell(0, 10), Is.EqualTo(3.3));
 			Assert.That(values.Cell(0, 11), Is.EqualTo("abcTRUE"));
-		}
-
-		[Test]
-		public async Task CSV()
-		{
-			var book = await ExcelFile.LoadBookAsync("test.xlsx", true);
-			var sheet = book["CSV"];
-			var csv = sheet.ToCSV();
-			Assert.That(csv, Is.EqualTo(
-@"abc,""""""abc"""""",""a""""b""""c"",""1,2,3"",""a
-b
-
-d"","));
 		}
 	}
 }

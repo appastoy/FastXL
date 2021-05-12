@@ -9,39 +9,55 @@ namespace FastXL
 	[DebuggerDisplay("Sheets={Sheets.Count}")]
 	public sealed class Workbook : IDisposable
 	{
-		readonly ExcelContext context;
+		readonly WorkbookContext context;
 		readonly Worksheet[] worksheets;
+		bool isDisposed;
 
 		public Worksheet this[int index] => worksheets[index];
 		public Worksheet this[string name] => worksheets.FirstOrDefault(ws => ws.Name == name);
 		public IReadOnlyList<Worksheet> Sheets => worksheets;
 
-		internal Workbook(ExcelContext context)
+		internal Workbook(WorkbookContext context)
 		{
 			this.context = context;
 			worksheets = context.SheetNames.Select((name, index) => new Worksheet(index, name, this.context)).ToArray();
 		}
 
-		public async Task LoadAllSheetAsync()
+		public async Task LoadAllSheetsAsync()
 		{
-			var loadSheetTasks = worksheets.Select(ws => ws.LoadAsync()).ToArray();
-			await Task.WhenAll(loadSheetTasks);
-			context.Archive.Dispose();
+			var loadSheetTasks = new List<Task>(worksheets.Length);
+			foreach (var worksheet in worksheets)
+			{
+				if (worksheet.IsLoaded)
+					continue;
+
+				var xml = worksheet.ReadXml();
+				var task = worksheet.LoadInternalAsync(xml);
+				loadSheetTasks.Add(task);
+			}
+			if (loadSheetTasks.Count == 0)
+				return;
+		
+			var tasks = loadSheetTasks.ToArray();
+			await Task.WhenAll(tasks);
+			Dispose();
 		}
 
-		public void LoadAllSheet()
+		public void LoadAllSheets()
 		{
-			LoadAllSheetAsync().Wait();
+			LoadAllSheetsAsync().Wait();
 		}
+
+		~Workbook() => Dispose();
 
 		public void Dispose()
 		{
-			context.Archive.Dispose();
-		}
-
-		~Workbook()
-		{
-			context.Archive.Dispose();
+			if (!isDisposed)
+			{
+				context.Archive.Dispose();
+				GC.SuppressFinalize(this);
+				isDisposed = true;
+			}
 		}
 	}
 }
