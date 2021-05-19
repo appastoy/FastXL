@@ -1,74 +1,78 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Xml;
 
 namespace FastXL
 {
 	static class WorksheetParser
 	{
-		const int alphabetRange = 'Z' - 'A' + 1;
-		static readonly Regex dimensionRE = new Regex(@"<dimension ref=""([^""]+)""", RegexOptions.Compiled);
-		static readonly Regex addressRE = new Regex(@"([a-zA-Z]+)(\d*)", RegexOptions.Compiled);
-		static readonly Regex cellRE = new Regex(@"<c r=""([^""]+)""(.*?)>(.+?)</c>", RegexOptions.Compiled);
-
-		public static async Task<Row[]> ParseRowsAsync(string sheetXml, WorkbookContext context)
+		public static Row[] ParseRows(string sheetXml, WorkbookContext context)
 		{
-			var (maxRow, maxColumn) = ParseDimension(sheetXml);
-			return await ParseCellsAsync(sheetXml, maxRow, maxColumn, context);
+			var reader = XmlReader.Create(new StringReader(sheetXml));
+			var (maxRow, maxColumn) = ParseDimension(reader);
+			return ParseCells(reader, maxRow, maxColumn, context);
 		}
 
-		static (int MaxRow, int MaxColumn) ParseDimension(string xml)
+		static (int MaxRow, int MaxColumn) ParseDimension(XmlReader reader)
 		{
-			var match = dimensionRE.Match(xml);
-			var usedRange = match.Groups[1].Value;
-			var ranges = usedRange.Split(':');
+			reader.ReadToFollowing("dimension");
+			reader.MoveToAttribute("ref");
+			var sheetRange = reader.Value;
+			var ranges = sheetRange.Split(':');
 
-			return ParseAddress(ranges[ranges.Length-1]);
+			return ParsingHelper.ParseAddress(ranges[ranges.Length-1]);
 		}
-
-		static (int Row, int Column) ParseAddress(string address)
-		{
-			var match = addressRE.Match(address);
-			var column = ConvertAlphabetToIndex(match.Groups[1].Value);
-			var row = int.Parse(match.Groups[2].Value);
-			return (row, column);
-		}
-
-		static int ConvertAlphabetToIndex(string address)
-		{
-			var sum = 0;
-			var unit = 1;
-			for (int i = address.Length - 1; i >= 0; i--)
-			{
-				var ch = char.ToUpper(address[i]);
-				sum += (ch - 'A' + 1) * unit;
-				unit *= alphabetRange;
-			}
-			return sum;
-		}
-
-		static async Task<Row[]> ParseCellsAsync(string xml, int maxRow, int maxColumn, WorkbookContext context)
+		static Row[] ParseCells(XmlReader reader, int maxRow, int maxColumn, WorkbookContext context)
 		{
 			var rows = new Row[maxRow];
 			for (int i = 0; i < maxRow; i++)
 				rows[i] = new Row(new Cell[maxColumn]);
 
-			var cellMatches = cellRE.Matches(xml).OfType<Match>();
-			await Task.Run(() =>
-			{
-				var option = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
-				Parallel.ForEach(cellMatches, option, cellMatch =>
-				{
-					var cellAddress = cellMatch.Groups[1].Value;
-					var cellAttribute = cellMatch.Groups[2].Value;
-					var cellValue = cellMatch.Groups[3].Value;
+			var usedMaxRow = 0;
+			var usedMaxColumn = 0;
 
-					var (row, col) = ParseAddress(cellAddress);
-					var value = CellParser.Parse(cellAttribute, cellValue, context);
-					rows[row - 1][col - 1] = new Cell(value);
-				});
-			});
+			while (reader.ReadToFollowing("c"))
+			{
+				var address = reader.GetAttribute("r");
+				var type = reader.GetAttribute("t");
+				var style = reader.GetAttribute("s");
+				string value = null;
+				if (reader.ReadToDescendant("v") && !reader.IsEmptyElement)
+					value = reader.ReadElementContentAsString();
+				var (row, column) = ParsingHelper.ParseAddress(address);
+				if (row > usedMaxRow) usedMaxRow = row;
+				if (column > usedMaxColumn) usedMaxColumn = column;
+
+				var cellValue = CellParser.Parse(type, style, value, context);
+				rows[row - 1][column - 1] = new Cell(cellValue);
+			}
+			
+			if (usedMaxRow != maxRow || usedMaxColumn != maxColumn)
+				rows = TrimUnusedRange(rows, usedMaxRow, usedMaxColumn);
+
+			return rows;
+		}
+
+		static Row[] TrimUnusedRange(Row[] rows, int usedMaxRow, int usedMaxColumn)
+		{
+			if (rows.Length != usedMaxRow)
+			{
+				var newRows = new Row[usedMaxRow];
+				for (int i = 0; i < usedMaxRow; ++i)
+					newRows[i] = rows[i];
+				rows = newRows;
+			}
+
+			if (usedMaxRow > 0 && rows[0].Count != usedMaxColumn)
+			{
+				for (int i = 0; i < usedMaxRow; i++)
+				{
+					var row = rows[i];
+					var newCells = new Cell[usedMaxColumn];
+					for (int j = 0; j < usedMaxColumn; j++)
+						newCells[j] = row[j];
+					rows[i] = new Row(newCells);
+				}
+			}
 
 			return rows;
 		}

@@ -1,26 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FastXL
 {
 	static class WorkbookParser
 	{
-		static readonly ParallelOptions parallelOption = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
-		static readonly Regex sheetNameRE = new Regex(@"<sheet name=""([^""]+)"".+?r:id=""rId(\d+)""", RegexOptions.Compiled);
-		static readonly Regex sharedStringRE = new Regex(@"<si>(.+?)</si>", RegexOptions.Compiled | RegexOptions.Singleline);
-		static readonly Regex sharedStringValuesRE = new Regex(@"<t.*?>(.*?)</t>", RegexOptions.Compiled | RegexOptions.Singleline);
-		static readonly Regex stylesRE = new Regex(@"<cellXfs count=""\d+"">(.*?)</cellXfs>", RegexOptions.Compiled | RegexOptions.Singleline);
-		static readonly Regex styleItemRE = new Regex(@"<xf numFmtId=""(\d+)""", RegexOptions.Compiled | RegexOptions.Singleline);
-
 		public static async Task<WorkbookContext> ParseAsync(Zip zip)
 		{
 			var sharedStringsXml = zip.ReadString("sharedStrings.xml");
-			var sharedStringsTask = ParseSharedStringsAsync(sharedStringsXml);
+			var sharedStringsTask = Task.Run(() => ParseSharedStrings(sharedStringsXml));
 			
 			var stylesXml = zip.ReadString("styles.xml");
-			var stylesTask = ParseStylesAsync(stylesXml);
+			var stylesTask = Task.Run(() => ParseStyles(stylesXml));
 			
 			var workbookXml = zip.ReadString("workbook.xml");
 			var sheetNames = ParseSheetNames(workbookXml);
@@ -33,61 +29,81 @@ namespace FastXL
 
 		static string[] ParseSheetNames(string workbookXml)
 		{
-			var matches = sheetNameRE.Matches(workbookXml);
-			var sheets = new string[matches.Count];
-			foreach (Match match in matches)
+			var sheets = new List<(int Index, string Name)>(32);
+			var reader = XmlReader.Create(new StringReader(workbookXml));
+			while (reader.ReadToFollowing("sheet"))
 			{
-				var sheetName = match.Groups[1].Value;
-				var sheetIndex = int.Parse(match.Groups[2].Value) - 1;
-				sheets[sheetIndex] = sheetName;
+				if (reader.MoveToAttribute("name"))
+				{
+					var name = reader.Value;
+					while (reader.MoveToNextAttribute())
+					{
+						if (reader.LocalName == "id")
+						{
+							var index = int.Parse(reader.Value.Substring(3));
+							sheets.Add((index, name));
+							break;
+						}
+					}
+				}
 			}
-			return sheets;
+
+			return sheets.OrderBy(s => s.Index).Select(s => s.Name).ToArray();
 		}
 
-		static async Task<string[]> ParseSharedStringsAsync(string sharedStringsXml)
+		static string[] ParseSharedStrings(string sharedStringsXml)
 		{
 			if (string.IsNullOrEmpty(sharedStringsXml))
 				return Array.Empty<string>();
 
-			var matches = sharedStringRE.Matches(sharedStringsXml);
-			var sharedStrings = new string[matches.Count];
-			await Task.Run(() =>
+			var builder = new StringBuilder(4096);
+			var sharedStrings = new List<string>(4096);
+			var reader = XmlReader.Create(new StringReader(sharedStringsXml));
+			while (reader.ReadToFollowing("si"))
 			{
-				Parallel.For(0, sharedStrings.Length, parallelOption, i =>
+				builder.Length = 0;
+				var subReader = reader.ReadSubtree();
+				while (subReader.ReadToFollowing("t"))
 				{
-					var valueMatches = sharedStringValuesRE.Matches(matches[i].Groups[1].Value);
-					if (valueMatches.Count == 0)
-					{
-						sharedStrings[i] = string.Empty;
-					}
-					else
-					{
-						sharedStrings[i] = string.Join(string.Empty, 
-							valueMatches.OfType<Match>().Select(m => m.Groups[1].Value));
-					}
-				});
-			});
-			return sharedStrings;
+					if (subReader.IsEmptyElement)
+						continue;
+					var value = subReader.ReadElementContentAsString() ?? string.Empty;
+					builder.Append(value);
+				}
+				sharedStrings.Add(builder.ToString());
+			}
+
+			return sharedStrings.ToArray();
 		}
 
-		static async Task<Style[]> ParseStylesAsync(string stylesXml)
+		static Style[] ParseStyles(string stylesXml)
 		{
 			if (string.IsNullOrEmpty(stylesXml))
 				return Array.Empty<Style>();
 
-			var stylesMatch = stylesRE.Match(stylesXml);
-			var styleItemMatches = styleItemRE.Matches(stylesMatch.Groups[1].Value);
-			var styles = new Style[styleItemMatches.Count];
-			
-			await Task.Run(() =>
+			List<Style> styles = null;
+			var reader = XmlReader.Create(new StringReader(stylesXml));
+			if (reader.ReadToFollowing("cellXfs"))
 			{
-				Parallel.For(0, styles.Length, parallelOption, i =>
+				var subReader = reader.ReadSubtree();
+				if (reader.MoveToAttribute("count"))
 				{
-					var numberFormat = int.Parse(styleItemMatches[i].Groups[1].Value);
-					styles[i] = new Style(numberFormat);
-				});
-			});
-			return styles;
+					var count = int.Parse(reader.Value);
+					styles = new List<Style>(count);
+				}
+				else
+				{
+					styles = new List<Style>(64);
+				}
+				while (subReader.ReadToFollowing("xf"))
+				{
+					if (subReader.MoveToAttribute("numFmtId"))
+						styles.Add(new Style(int.Parse(subReader.Value)));
+					else
+						styles.Add(new Style(0));
+				}
+			}
+			return styles?.ToArray() ?? Array.Empty<Style>();
 		}
 	}
 }

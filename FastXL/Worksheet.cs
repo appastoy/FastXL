@@ -62,7 +62,7 @@ namespace FastXL
 				return;
 
 			var sheetXml = ReadXml();
-			LoadInternalAsync(sheetXml).Wait();
+			LoadInternal(sheetXml);
 		}
 
 		public async Task LoadAsync()
@@ -74,9 +74,14 @@ namespace FastXL
 			await LoadInternalAsync(sheetXml);
 		}
 
+		internal void LoadInternal(string sheetXml)
+		{
+			rows = WorksheetParser.ParseRows(sheetXml, context);
+		}
+
 		internal async Task LoadInternalAsync(string sheetXml)
 		{
-			rows = await WorksheetParser.ParseRowsAsync(sheetXml, context);
+			rows = await Task.Run(() => WorksheetParser.ParseRows(sheetXml, context));
 		}
 
 		void ThrowIfNotLoaded()

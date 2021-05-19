@@ -4,8 +4,9 @@ This project is a fast excel file reader C# library. This supports only read. NO
 
 # How to
 Excel file(.xlsx, .xlsm) is a set of XML files that are compressed to zip archive.
-This library reads XML files in zip archive directly. Especially, For performance, it doesn't use any XML library. 
-It uses only regular expressions. So you can access minimum things of excel file specification.
+This library reads XML files in zip archive directly. 
+Especially, For performance, It uses XmlReader instance to parsing forward. 
+So you can access minimum things of excel file specification.
 
 # Example
 
