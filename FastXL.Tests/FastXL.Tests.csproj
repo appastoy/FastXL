@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Resource Include="test.xlsx" />
-    <Resource Include="ExcelFile.cs" />
   </ItemGroup>
 
   <ItemGroup>
