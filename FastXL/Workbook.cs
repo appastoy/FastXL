@@ -45,7 +45,7 @@ namespace FastXL
 
 		public void LoadAllSheets()
 		{
-			LoadAllSheetsAsync().Wait();
+			LoadAllSheetsAsync().GetAwaiter().GetResult();
 		}
 
 		~Workbook() => Dispose();

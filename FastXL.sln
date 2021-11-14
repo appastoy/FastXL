@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL", "FastXL\FastXL.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL.Tests", "FastXL.Tests\FastXL.Tests.csproj", "{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABD4718A-FEBB-462C-887F-19D511C4A69F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet_test.yml = .github\workflows\dotnet_test.yml
+		HISTORY.md = HISTORY.md
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

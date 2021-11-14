@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace FastXL
@@ -11,6 +12,7 @@ namespace FastXL
 		static readonly object longZero = 0L;
 		static readonly object ulongZero = 0UL;
 		static readonly object doubleZero = 0d;
+		static readonly object decimalZero = 0m;
 
 		static readonly Regex floatRE = new Regex(@"^-?\d+(?:\.?\d*[eE][+-]?|\.)\d+$", RegexOptions.Compiled | RegexOptions.Multiline);
 		static readonly Regex intRE = new Regex(@"^-?\d+(?:[eE]\+?\d+)?$", RegexOptions.Compiled | RegexOptions.Multiline);
@@ -25,15 +27,16 @@ namespace FastXL
 
 			if (floatRE.IsMatch(value))
 			{
-				if (double.TryParse(value, out var doubleValue)) return doubleValue == 0.0 ? doubleZero : doubleValue;
+				if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue)) return doubleValue == 0.0d ? doubleZero : doubleValue;
+				if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var decimalValue)) return decimalValue == 0.0m ? decimalZero : decimalValue;
 				return value;
 			}
 
 			if (intRE.IsMatch(value))
 			{
-				if (int.TryParse(value, out var intValue)) return intValue == 0 ? intZero : intValue;
-				if (long.TryParse(value, out var longValue)) return longValue == 0L ? longZero : longValue;
-				if (ulong.TryParse(value, out var ulongValue)) return ulongValue == 0UL ? ulongZero : ulongValue;
+				if (int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var intValue)) return intValue == 0 ? intZero : intValue;
+				if (long.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var longValue)) return longValue == 0L ? longZero : longValue;
+				if (ulong.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var ulongValue)) return ulongValue == 0UL ? ulongZero : ulongValue;
 			}
 
 			return value;

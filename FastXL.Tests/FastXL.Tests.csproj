@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="~%24empty.xlsx" />
+    <None Remove="~%24test.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
@@ -18,7 +23,6 @@
 
   <ItemGroup>
     <Resource Include="test.xlsx" />
-    <Resource Include="ExcelFile.cs" />
   </ItemGroup>
 
   <ItemGroup>

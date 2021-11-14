@@ -6,7 +6,7 @@ namespace FastXL
 	[DebuggerDisplay("{Value}")]
 	public readonly struct Cell
 	{
-		static readonly string defaultDateTimeFormat = "yyyy-MM-dd";
+		static readonly string defaultDateTimeFormat = @"yyyy\-MM\-dd";
 
 		public readonly object Value;
 
