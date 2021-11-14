@@ -10,9 +10,9 @@
     <PackageLicenseExpression> MIT</PackageLicenseExpression>
     <Description>This project is a fast excel file reader C# library. This supports only read. NOT write.</Description>
     <Authors>appastoy</Authors>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Include pdb symbols.</PackageReleaseNotes>
+    <PackageReleaseNotes>SetUp automation for nuget package upload process in github action.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
