@@ -20,7 +20,10 @@ jobs:
 
     - name: Clear Binaries
       shell: pwsh
-      run: Remove-Item FastXL\bin -Force -Recurse
+      run: |
+           if (Test-Path -Path FastXL\bin) { \
+               Remove-Item FastXL\bin -Force -Recurse \
+           }
 
     - name: Restore dependencies
       run: dotnet restore
