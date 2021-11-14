@@ -3,6 +3,7 @@
 This project is a fast excel file reader C# library. This supports only read. NOT write.
 
 [![.NET Test](https://github.com/appastoy/FastXL/actions/workflows/dotnet_test.yml/badge.svg?branch=develop)](https://github.com/appastoy/FastXL/actions/workflows/dotnet_test.yml)
+[![.NET Publish](https://github.com/appastoy/FastXL/actions/workflows/dotnet_publish.yml/badge.svg?branch=master)](https://github.com/appastoy/FastXL/actions/workflows/dotnet_publish.yml)
 [![NuGet version (AppAsToy.FastXL)](https://img.shields.io/nuget/v/AppAsToy.FastXL.svg?style=flat-square)](https://www.nuget.org/packages/AppAsToy.FastXL/)
 
 __GitHub__: https://github.com/appastoy/FastXL
