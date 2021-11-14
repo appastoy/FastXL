@@ -1,0 +1,42 @@
+name: .NET Publish
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Clear Binaries
+      shell: pwsh
+      run: Remove-Item FastXL\bin -Force -Recurse
+
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Build Release
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Pack Package
+      run: dotnet pack --no-build --no-restore --include-symbols --configuration Release
+
+    - name: Rename Package
+      shell: pwsh
+      run: Get-ChildItem FastXL\bin\Release\*.symbols.nupkg | Rename-Item -NewName AppAsToy.FastXL.nupkg
+
+    - name: Upload Package
+      run: dotnet nuget push "FastXL/bin/Release/AppAsToy.FastXL.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
