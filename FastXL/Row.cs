@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	public readonly struct Row : IReadOnlyList<Cell>
 	{

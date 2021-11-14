@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	[DebuggerDisplay("Sheets={Sheets.Count}")]
 	public sealed class Workbook : IDisposable

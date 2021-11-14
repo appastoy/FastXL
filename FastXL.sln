@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31105.61
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL", "FastXL\FastXL.csproj", "{ACB15CC3-D227-48FE-BEBB-4A9D31F830AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAsToy.FastXL", "FastXL\AppAsToy.FastXL.csproj", "{ACB15CC3-D227-48FE-BEBB-4A9D31F830AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastXL.Tests", "FastXL.Tests\FastXL.Tests.csproj", "{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppAsToy.FastXL.Tests", "FastXL.Tests\AppAsToy.FastXL.Tests.csproj", "{C71A5D6A-240A-41C2-9E28-E3B2A58879BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABD4718A-FEBB-462C-887F-19D511C4A69F}"
 	ProjectSection(SolutionItems) = preProject

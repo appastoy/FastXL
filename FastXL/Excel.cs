@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	public static class Excel
 	{

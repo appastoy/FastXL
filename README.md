@@ -12,7 +12,7 @@ So you can access minimum things of excel file specification.
 
 ### Load excel file.
 ```csharp
-using FastXL;
+using AppAsToy.FastXL;
 
 // Load book (without all sheets unloaded)
 var book = ExcelFile.LoadBook("test.xlsx");
@@ -23,7 +23,7 @@ var book = ExcelFile.LoadBook("test.xlsx", loadAllSheet = true);
 
 ### Access workbook.
 ```csharp
-using FastXL;
+using AppAsToy.FastXL;
 
 var book = ExcelFile.LoadBook("test.xlsx");
 
@@ -42,7 +42,7 @@ foreach (var sheet in book.Sheets)
 
 ### Access worksheet.
 ```csharp
-using FastXL;
+using AppAsToy.FastXL;
 
 var book = ExcelFile.LoadBook("test.xlsx");
 var sheet = book["Sheet1"];

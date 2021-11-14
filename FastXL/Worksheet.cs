@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	[DebuggerDisplay("Name={Name}, Rows={RowCount}, Columns={ColumnCount}, Cells={CellCount}")]
 	public sealed class Worksheet

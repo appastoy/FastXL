@@ -1,4 +1,4 @@
-﻿namespace FastXL
+﻿namespace AppAsToy.FastXL
 {
 	enum NumberFormat
 	{

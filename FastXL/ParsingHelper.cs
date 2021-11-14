@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	static class ParsingHelper
 	{

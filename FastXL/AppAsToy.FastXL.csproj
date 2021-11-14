@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright></Copyright>
+    <RepositoryUrl>https://github.com/appastoy/FastXL</RepositoryUrl>
+    <PackageTags>microsoft;excel;reader</PackageTags>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression> MIT</PackageLicenseExpression>
+    <Description>This project is a fast excel file reader C# library. This supports only read. NOT write.</Description>
+    <Authors>appastoy</Authors>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+</Project>

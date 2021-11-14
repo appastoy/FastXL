@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FastXL.Tests
+namespace AppAsToy.FastXL.Tests
 {
 	public class WorkbookTests
 	{

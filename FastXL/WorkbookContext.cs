@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	class WorkbookContext
 	{

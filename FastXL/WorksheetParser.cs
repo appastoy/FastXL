@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	static class WorksheetParser
 	{

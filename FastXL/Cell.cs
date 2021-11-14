@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	[DebuggerDisplay("{Value}")]
 	public readonly struct Cell

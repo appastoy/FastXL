@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace FastXL
+namespace AppAsToy.FastXL
 {
 	internal class Zip : IDisposable
 	{
