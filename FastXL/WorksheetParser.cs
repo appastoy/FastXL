@@ -46,7 +46,7 @@ namespace FastXL
 				rows[row - 1][column - 1] = new Cell(cellValue);
 			}
 			
-			if (usedMaxRow != maxRow || usedMaxColumn != maxColumn)
+			if (usedMaxRow < maxRow || usedMaxColumn < maxColumn)
 				rows = TrimUnusedRange(rows, usedMaxRow, usedMaxColumn);
 
 			return rows;
@@ -54,7 +54,7 @@ namespace FastXL
 
 		static Row[] TrimUnusedRange(Row[] rows, int usedMaxRow, int usedMaxColumn)
 		{
-			if (rows.Length != usedMaxRow)
+			if (usedMaxRow < rows.Length)
 			{
 				var newRows = new Row[usedMaxRow];
 				for (int i = 0; i < usedMaxRow; ++i)
@@ -62,7 +62,9 @@ namespace FastXL
 				rows = newRows;
 			}
 
-			if (usedMaxRow > 0 && rows[0].Count != usedMaxColumn)
+			if (usedMaxRow > 0 && 
+				rows.Length > 0 &&
+				usedMaxColumn < rows[0].Count)
 			{
 				for (int i = 0; i < usedMaxRow; i++)
 				{
