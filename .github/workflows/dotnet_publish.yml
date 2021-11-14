@@ -39,7 +39,7 @@ jobs:
 
     - name: Rename Package
       shell: pwsh
-      run: Get-ChildItem FastXL\bin\Release\*.symbols.nupkg | Rename-Item -NewName AppAsToy.FastXL.nupkg
+      run: Get-ChildItem FastXL\bin\Release\*.snupkg | Rename-Item -NewName AppAsToy.FastXL.snupkg
 
     - name: Upload Package
-      run: dotnet nuget push "FastXL/bin/Release/AppAsToy.FastXL.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "FastXL/bin/Release/AppAsToy.FastXL.snupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
