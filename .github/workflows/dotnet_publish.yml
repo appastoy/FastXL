@@ -28,8 +28,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     
+    - name: Build
+      run: dotnet build --no-restore
+
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-build --no-restore --verbosity normal
    
     - name: Pack Package
       run: dotnet pack --no-restore --include-source --configuration Release /p:ContinuousIntegrationBuild=true
