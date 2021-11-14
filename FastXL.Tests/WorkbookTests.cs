@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FastXL.Tests
 {
-	public class Workbook_Test
+	public class WorkbookTests
 	{
 		[Test]
 		public async Task Empty_Book()

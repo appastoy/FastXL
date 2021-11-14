@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FastXL.Tests
 {
-	public class Worksheet_Test
+	public class WorksheetTests
 	{
 		[Test]
 		public async Task Sheet()
