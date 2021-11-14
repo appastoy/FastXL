@@ -13,9 +13,11 @@
     <Version>0.1.4</Version>
     <PackageReleaseNotes>Include source and set deterministic build setting when pack.</PackageReleaseNotes>
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	  
 	<IncludeSymbols>true</IncludeSymbols>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	  
 	<PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -23,21 +25,16 @@
 		<None Include="..\README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <Deterministic>False</Deterministic>
+		<Deterministic>False</Deterministic>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <Deterministic>True</Deterministic>
+		<Deterministic>True</Deterministic>
 	</PropertyGroup>
 
-	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	</ItemGroup>
 
 </Project>
