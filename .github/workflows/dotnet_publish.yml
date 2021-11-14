@@ -29,17 +29,13 @@ jobs:
       run: dotnet restore
     
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
 
     - name: Test
-      run: dotnet test --no-build --no-restore --verbosity normal
+      run: dotnet test --no-build --no-restore --verbosity normal --configuration Release
    
     - name: Pack Package
-      run: dotnet pack --no-restore --include-source --configuration Release
+      run: dotnet pack --no-build --no-restore --include-source --configuration Release
 
-    - name: Rename Package
-      shell: pwsh
-      run: Get-ChildItem FastXL\bin\Release\*.snupkg | Rename-Item -NewName AppAsToy.FastXL.snupkg
-
-    - name: Upload Package
-      run: dotnet nuget push "FastXL/bin/Release/AppAsToy.FastXL.snupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Push Package
+      run: dotnet nuget push FastXL/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
